@@ -68,7 +68,7 @@ jobs:
         if: always()
         run: docker rm -f weather-app-container
 
-SBOM:
+  SBOM:
     name: Generate SBOM
     runs-on: ubuntu-latest
     steps:
