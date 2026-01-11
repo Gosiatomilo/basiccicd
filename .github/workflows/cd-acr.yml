@@ -46,3 +46,19 @@ jobs:
           context: .
           push: true
           tags: ${{ vars.ACR_NAME }}.azurecr.io/${{ vars.IMAGE_NAME }}:${{ env.SHA }}-${{ env.DATE }}
+
+      - name: Trigger deployment workflow
+        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'cd-webapp.yml',
+              ref: 'main',
+              inputs: {
+                image_tag: '${{ env.SHA }}-${{ env.DATE }}'
+              }
+            })
